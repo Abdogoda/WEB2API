@@ -19,13 +19,27 @@
     <div id="sidebar" class="bg-gray-800 w-64 min-h-screen p-5 fixed transition-transform transform -translate-x-full md:translate-x-0">
         <h2 class="text-xl font-bold text-white mb-6">E-Commerce</h2>
         <ul class="space-y-4 flex-grow">
-            <li><a href="{{ route('admin.dashboard') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700' : '' }}"><i class="fa fa-chart-line text-blue-600 pr-1"></i> Dashboard</a></li>
-            <li><a href="{{ route('admin.roles.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.roles.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-user-shield text-blue-600 pr-1"></i> Roles</a></li>
-            <li><a href="{{ route('admin.users.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.users.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-users text-blue-600 pr-1"></i> Users</a></li>
-            <li><a href="{{ route('admin.categories.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.categories.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-list text-blue-600 pr-1"></i> Categories</a></li>
-            <li><a href="{{ route('admin.products.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.products.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-box text-blue-600 pr-1"></i> Products</a></li>
-            <li><a href="{{ route('admin.orders.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.orders.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-list-check text-blue-600 pr-1"></i> Orders</a></li>
-            <li><a href="{{ route('admin.messages.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.messages.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-envelope text-blue-600 pr-1"></i> Messages</a></li>
+            @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_DASHBOARD->value)
+                <li><a href="{{ route('admin.dashboard') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.dashboard') ? 'bg-gray-700' : '' }}"><i class="fa fa-chart-line text-blue-600 pr-1"></i> Dashboard</a></li>
+            @endhasPermissionTo
+            @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_ROLES->value)
+                <li><a href="{{ route('admin.roles.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.roles.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-user-shield text-blue-600 pr-1"></i> Roles</a></li>
+            @endhasPermissionTo
+            @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_USERS->value)
+                <li><a href="{{ route('admin.users.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.users.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-users text-blue-600 pr-1"></i> Users</a></li>
+            @endhasPermissionTo
+            @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_CATEGORIES->value)
+                <li><a href="{{ route('admin.categories.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.categories.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-list text-blue-600 pr-1"></i> Categories</a></li>
+            @endhasPermissionTo
+            @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_PRODUCTS->value)
+                <li><a href="{{ route('admin.products.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.products.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-box text-blue-600 pr-1"></i> Products</a></li>
+            @endhasPermissionTo
+            @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_ORDERS->value)
+                <li><a href="{{ route('admin.orders.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.orders.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-list-check text-blue-600 pr-1"></i> Orders</a></li>
+            @endhasPermissionTo
+            {{-- @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_MESSAGES->value) --}}
+                <li><a href="{{ route('admin.messages.index') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('admin.messages.index') ? 'bg-gray-700' : '' }}"><i class="fa fa-envelope text-blue-600 pr-1"></i> Messages</a></li>
+            {{-- @endhasPermissionTo --}}
             
             <hr class="border-gray-600 my-4">
             <li><a href="{{ route('profile') }}" class="block p-2 rounded hover:bg-gray-700 {{ request()->routeIs('profile') ? 'bg-gray-700' : '' }}"><i class="fa fa-user text-blue-600 pr-1"></i> Profile</a></li>

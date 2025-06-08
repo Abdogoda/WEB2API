@@ -10,7 +10,7 @@ class MessageController extends Controller
 {
     public function index()
     {
-        Gate::authorize('viewAny', Message::class);
+        // Gate::authorize('viewAny', Message::class);
 
         $messages = Message::latest()->paginate(10);
         $unreadMessagesCount = Message::where('is_read', 0)->count();
@@ -19,7 +19,7 @@ class MessageController extends Controller
 
     public function markAsRead(Message $message)
     {
-        Gate::authorize('markAsRead', $message);
+        // Gate::authorize('markAsRead', $message);
 
         $message->update(['is_read' => 1]);
         return redirect()->route('admin.messages.index')->with('success', 'Message marked as read');
@@ -27,7 +27,7 @@ class MessageController extends Controller
 
     public function markAllAsRead()
     {
-        Gate::authorize('markAllAsRead', Message::class);
+        // Gate::authorize('markAllAsRead', Message::class);
 
         Message::where('is_read', 0)->update(['is_read' => 1]);
         return redirect()->route('admin.messages.index')->with('success', 'All messages marked as read');
@@ -35,7 +35,7 @@ class MessageController extends Controller
 
     public function destroy(Message $message)
     {
-        Gate::authorize('delete', $message);
+        // Gate::authorize('delete', $message);
 
         $message->delete();
         return redirect()->route('admin.messages.index')->with('success', 'Message deleted successfully');
