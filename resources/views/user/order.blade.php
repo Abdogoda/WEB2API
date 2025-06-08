@@ -85,8 +85,8 @@
             @foreach ($order->statuses()->orderBy('created_at', 'desc')->get() as $status)
                 @php
                     $color = $status->status == 'pending' ? 'yellow' : 
-                                  ($status == 'processing' ? 'blue' : 
-                                  ($status == 'completed' ? 'green' : 'red'));
+                                  ($status->status == 'processing' ? 'blue' : 
+                                  ($status->status == 'completed' ? 'green' : 'red'));
                 @endphp
                 <li class=" relative pl-5 mb-3">
                     <span class="absolute left-0 top-1/4 transform -translate-y-1/2 h-2 w-2 rounded-full bg-{{ $color }}-600"></span>
