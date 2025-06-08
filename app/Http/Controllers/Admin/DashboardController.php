@@ -29,7 +29,6 @@ class DashboardController extends Controller
             ->get();
 
         // Products by category for chart
-
         $productsByCategory = Category::withCount('products')
             ->orderBy('products_count', 'desc')
             ->take(5)

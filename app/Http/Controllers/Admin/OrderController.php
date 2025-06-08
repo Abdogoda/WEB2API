@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        Gate::authorize('viewAny', Order::class);
+
         $query = Order::query();
 
         if ($request->has('search')) {
@@ -22,12 +25,16 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        Gate::authorize('view', $order);
+
         $order->load(['items', 'statuses', 'user']);
         return view('admin.orders.show', compact('order'));
     }
 
     public function status(Request $request, Order $order)
     {
+        Gate::authorize('changeStatus', $order);
+
         $request->validate([
             'status' => 'required|in:pending,processing,completed,cancelled',
             'description' => 'nullable|string|max:1000',

@@ -7,14 +7,16 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-
     public function index()
     {
+        Gate::authorize('viewAny', Product::class);
+
         $products = Product::with(['category', 'images'])->orderBy('created_at', 'desc')->get();
         $categories = Category::all();
         return view('admin.products.index', compact('products', 'categories'));
@@ -22,6 +24,8 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        Gate::authorize('create', Product::class);
+
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name',
             'description' => 'nullable|string',
@@ -56,6 +60,8 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+        Gate::authorize('view', $product);
+
         $product->load(['category', 'images']);
         $simillarProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
@@ -67,6 +73,8 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
+        Gate::authorize('update', $product);
+
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name,' . $product->id,
             'description' => 'nullable|string',
@@ -93,6 +101,8 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        Gate::authorize('delete', $product);
+
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
@@ -110,6 +120,8 @@ class ProductController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
+        Gate::authorize('update', $product);
+
         if ($product->images->count() >= 5) {
             return back()->with('error', 'You can only upload 5 images.');
         }
@@ -125,6 +137,9 @@ class ProductController extends Controller
     public function setPrimary(ProductImage $image)
     {
         $product = $image->product;
+
+        Gate::authorize('update', $product);
+
         $product->images()->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
 
@@ -133,15 +148,17 @@ class ProductController extends Controller
 
     public function deleteImage(ProductImage $image)
     {
+        $product = $image->product;
+        Gate::authorize('update', $product);
+
         Storage::disk('public')->delete($image->path);
 
         if ($image->isPrimary()) {
-            $product = $image->product;
             $product->images->where('id', '!=', $product->id)->first()->update(['is_primary' => true]);
         }
 
         $image->delete();
 
-        return redirect()->to('admin.products.index')->with('success', 'Image deleted successfully.');
+        return redirect()->back()->with('success', 'Image deleted successfully.');
     }
 }
