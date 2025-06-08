@@ -107,15 +107,25 @@ class OrderController extends Controller
 
     public function update(Request $request, Order $order)
     {
-        $request->validate([
-            'quantity' => 'required|integer|min:1',
-            'address' => 'required|string',
-            'phone' => 'required|string',
+        $data = $request->validate([
+            'shipping_country' => 'sometimes|string|max:255',
+            'shipping_city' => 'required|string|max:255',
+            'shipping_state' => 'required|string|max:255',
+            'shipping_address' => 'required|string|max:500',
+            'shipping_phone' => 'required|string|max:20',
+            'notes' => 'nullable|string|max:1000',
         ]);
 
-        $order->update($request->only('quantity', 'address', 'phone'));
+        $order->update([
+            'shipping_country' => $data['shipping_country'],
+            'shipping_city' => $data['shipping_city'],
+            'shipping_state' => $data['shipping_state'],
+            'shipping_address' => $data['shipping_address'],
+            'shipping_phone' => $data['shipping_phone'],
+            'notes' => $data['notes'] ?? null,
+        ]);
 
-        return redirect()->route('orders.show', $order);
+        return redirect()->route('orders.show', $order)->with('success', 'Order Info Changed Successfully');
     }
 
     public function cancel(Order $order)

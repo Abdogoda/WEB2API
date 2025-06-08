@@ -110,21 +110,29 @@
                 <label for="shipping_address" class="block text-sm font-medium text-gray-400">Shipping Address</label>
                 <input type="text" name="shipping_address" id="shipping_address" value="{{ $order->shipping_address }}" class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded bg-gray-800 text-gray-300">
             </div>
-
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="mb-4">
-                    <label for="shipping_country" class="block text-sm font-medium text-gray-400">City</label>
+                    <label for="shipping_country" class="block text-sm font-medium text-gray-400">Country</label>
                     <input type="text" name="shipping_country" id="shipping_country" value="{{ $order->shipping_country }}" class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded bg-gray-800 text-gray-300">
+                </div>
+                <div class="mb-4">
+                    <label for="shipping_state" class="block text-sm font-medium text-gray-400">State</label>
+                    <input type="text" name="shipping_state" id="shipping_state" value="{{ $order->shipping_state }}" class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded bg-gray-800 text-gray-300">
                 </div>
                 <div class="mb-4">
                     <label for="shipping_city" class="block text-sm font-medium text-gray-400">City</label>
                     <input type="text" name="shipping_city" id="shipping_city" value="{{ $order->shipping_city }}" class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded bg-gray-800 text-gray-300">
                 </div>
-                <div class="mb-4">
-                    <label for="shipping_state" class="block text-sm font-medium text-gray-400">City</label>
-                    <input type="text" name="shipping_state" id="shipping_state" value="{{ $order->shipping_state }}" class="mt-1 block w-full px-3 py-2 border border-gray-700 rounded bg-gray-800 text-gray-300">
-                </div>
             </div>
+            
+            <label class="block text-gray-400 mb-1">Shipping Phone</label>
+            <input type="text" name="shipping_phone" value="{{ $order->shipping_phone }}" placeholder="Shipping Phone" class="mb-3 w-full p-3 rounded bg-gray-700 text-gray-100 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            
+            <label class="block text-gray-400 mb-1">Shipping Address</label>
+            <textarea name="shipping_address" placeholder="Shipping Address" class="mb-3 w-full p-3 rounded bg-gray-700 text-gray-100 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ $order->shipping_address }}</textarea>
+
+            <label class="block text-gray-400 mb-1">Notes</label>
+            <textarea name="notes" placeholder="Shipping Notes" class="mb-3 w-full p-3 rounded bg-gray-700 text-gray-100 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ $order->notes }}</textarea>
 
             <div class="flex justify-end space-x-2 mt-4">
                 <button type="button" onclick="closeModal('changeShippingAddressModal')" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
