@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\WEB\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SendResetLinkMail;
@@ -11,9 +11,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
-class ForgotPasswordController extends Controller{
+class ForgotPasswordController extends Controller
+{
 
-    public function forgot(Request $request){
+    public function forgot(Request $request)
+    {
         $request->validate([
             'email' => 'required|string|email|exists:users,email'
         ]);
@@ -32,7 +34,8 @@ class ForgotPasswordController extends Controller{
         return back()->with("success", 'We have sent you an email with the reset link');
     }
 
-    public function reset(Request $request){
+    public function reset(Request $request)
+    {
         $request->validate([
             'email' => 'required|email|exists:users,email',
             'token' => 'required|string',
@@ -41,7 +44,7 @@ class ForgotPasswordController extends Controller{
 
         $token = DB::table('password_reset_tokens')->where('email', $request->email)->first();
 
-        if(!$token || !Hash::check($request->token, $token->token)){
+        if (!$token || !Hash::check($request->token, $token->token)) {
             return back()->with("error", 'Invalid token');
         }
 

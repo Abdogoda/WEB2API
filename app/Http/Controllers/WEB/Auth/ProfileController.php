@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\WEB\Auth;
 
 use App\Enums\PermissionsEnum;
 use App\Http\Controllers\Controller;

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\WEB\User;
 
+use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Message;
 use App\Models\Product;
