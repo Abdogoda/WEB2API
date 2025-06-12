@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\API\V1\User;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseApiController;
 use App\Models\Message;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class MessageController extends Controller
+class MessageController extends BaseApiController
 {
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -18,9 +19,6 @@ class MessageController extends Controller
 
         $message = Message::create($request->all());
 
-        return response()->json([
-            'message' => 'Message sent successfully',
-            'data' => $message
-        ]);
+        return $this->sendResponse($message, 'Message sent successfully', 201);
     }
 }

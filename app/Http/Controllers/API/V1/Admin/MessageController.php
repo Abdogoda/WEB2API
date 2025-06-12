@@ -2,52 +2,42 @@
 
 namespace App\Http\Controllers\API\V1\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseApiController;
 use App\Models\Message;
+use Illuminate\Http\JsonResponse;
 
-class MessageController extends Controller
+class MessageController extends BaseApiController
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $messages = Message::latest()->paginate(10);
         $unreadMessagesCount = Message::where('is_read', 0)->count();
-        return response()->json([
-            'data' => [
-                'messages' => $messages,
-                'unreadMessagesCount' => $unreadMessagesCount
-            ]
-        ]);
+        return $this->sendResponse([
+            'messages' => $messages,
+            'unread_count' => $unreadMessagesCount
+        ], 'Messages retrieved successfully');
     }
 
-    public function show(Message $message)
+    public function show(Message $message): JsonResponse
     {
-        return response()->json([
-            'message' => $message
-        ]);
+        return $this->sendResponse($message, 'Message retrieved successfully');
     }
 
-    public function markAsRead(Message $message)
+    public function markAsRead(Message $message): JsonResponse
     {
         $message->update(['is_read' => 1]);
-        return response()->json([
-            'message' => 'Message marked as read',
-            'message_data' => $message
-        ]);
+        return $this->sendResponse($message, 'Message marked as read');
     }
 
-    public function markAllAsRead()
+    public function markAllAsRead(): JsonResponse
     {
         Message::where('is_read', 0)->update(['is_read' => 1]);
-        return response()->json([
-            'message' => 'All messages marked as read'
-        ]);
+        return $this->sendResponse(message: 'All messages marked as read');
     }
 
-    public function destroy(Message $message)
+    public function destroy(Message $message): JsonResponse
     {
         $message->delete();
-        return response()->json([
-            'message' => 'Message deleted successfully'
-        ]);
+        return $this->sendResponse(message: 'Message deleted successfully');
     }
 }

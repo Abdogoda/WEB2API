@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers\API\V1\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseApiController;
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class CategoryController extends Controller
+class CategoryController extends BaseApiController
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $categories = Category::withCount('products')->orderBy('created_at', 'desc')->get();
-        return response()->json([
-            'data' => $categories
-        ]);
+        return $this->sendResponse($categories, 'Categories retrieved successfully.');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
@@ -38,21 +37,16 @@ class CategoryController extends Controller
             'description' => $request->description,
         ]);
 
-        return response()->json([
-            'data' => $category,
-            'message' => 'Category created successfully.'
-        ], 201);
+        return $this->sendResponse($category, 'Category created successfully.', 201);
     }
 
-    public function show(Category $category)
+    public function show(Category $category): JsonResponse
     {
         $category->load('products');
-        return response()->json([
-            'data' => $category
-        ]);
+        return $this->sendResponse($category, 'Category retrieved successfully.');
     }
 
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Category $category): JsonResponse
     {
         $data = $request->validate([
             'name' => 'sometimes|string|max:255|unique:categories,name,' . $category->id,
@@ -72,21 +66,16 @@ class CategoryController extends Controller
 
         $category->update($data);
 
-        return response()->json([
-            'data' => $category,
-            'message' => 'Category updated successfully.'
-        ]);
+        return $this->sendResponse($category, 'Category updated successfully.');
     }
 
-    public function destroy(Category $category)
+    public function destroy(Category $category): JsonResponse
     {
         if ($category->image) {
             Storage::disk('public')->delete($category->image);
         }
 
         $category->delete();
-        return response()->json([
-            'message' => 'Category deleted successfully.'
-        ]);
+        return $this->sendResponse(message: 'Category deleted successfully.');
     }
 }
