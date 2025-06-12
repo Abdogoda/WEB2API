@@ -18,6 +18,7 @@ class ProductController extends Controller
             'min_price' => 'sometimes|numeric|min:0',
             'max_price' => 'sometimes|numeric|min:0',
             'featured' => 'sometimes|boolean',
+            'per_page' => 'sometimes|integer|min:1|max:100'
         ]);
         if ($request->filled('min_price') && $request->filled('max_price')) {
             if ($request->min_price > $request->max_price) {
@@ -48,7 +49,8 @@ class ProductController extends Controller
             $query->where('featured', true);
         }
 
-        $products = $query->paginate(12);
+        $perPage = $request->input('per_page', 12);
+        $products = $query->paginate($perPage);
 
         return response()->json([
             'data' => $products
