@@ -1,31 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        Gate::authorize('viewAny', Product::class);
-
         $products = Product::with(['category', 'images'])->orderBy('created_at', 'desc')->get();
-        $categories = Category::all();
-        return view('admin.products.index', compact('products', 'categories'));
+        return response()->json([
+            'data' => $products
+        ]);
     }
 
     public function store(Request $request)
     {
-        Gate::authorize('create', Product::class);
-
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name',
             'description' => 'nullable|string',
@@ -55,60 +50,67 @@ class ProductController extends Controller
             }
         }
 
-        return back()->with('success', 'Product created successfully.');
+        return response()->json([
+            'data' => $product,
+            'message' => 'Product Created Successfully'
+        ], 201);
     }
 
     public function show(Product $product)
     {
-        Gate::authorize('view', $product);
-
         $product->load(['category', 'images']);
+
+        return response()->json([
+            'data' => $product
+        ]);
+    }
+
+    public function simillerProducts(Product $product)
+    {
         $simillarProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->inRandomOrder()->limit(6)->get();
-        $categories = Category::all();
 
-        return view('admin.products.show', compact('product', 'simillarProducts', 'categories'));
+        return response()->json([
+            'data' => $simillarProducts
+        ]);
     }
 
     public function update(Request $request, Product $product)
     {
-        Gate::authorize('update', $product);
-
-        $request->validate([
-            'name' => 'required|string|max:255|unique:products,name,' . $product->id,
+        $data = $request->validate([
+            'name' => 'sometimes|string|max:255|unique:products,name,' . $product->id,
             'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|gt:0',
-            'stock' => 'required|numeric|gt:0',
+            'category_id' => 'sometimes|exists:categories,id',
+            'price' => 'sometimes|numeric|gt:0',
+            'stock' => 'sometimes|numeric|gt:0',
             'active' => 'nullable|in:on,off',
             'featured' => 'nullable|in:on,off',
         ]);
 
-        $product->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'active' => $request->active ? true : false,
-            'featured' => $request->featured ? true : false
-        ]);
+        $data['slug'] = Str::slug($request->name ?? $product->name);
+        $data['active'] = $request->active ? true : false;
+        $data['featured'] = $request->featured ? true : false;
 
-        return back()->with('success', 'Product updated successfully.');
+
+        $product->update($data);
+
+        return response()->json([
+            'data' => $product,
+            'message' => 'Product updated successfully.'
+        ]);
     }
 
     public function destroy(Product $product)
     {
-        Gate::authorize('delete', $product);
-
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
-        return back()->with('success', 'Product deleted successfully.');
+        return response()->json([
+            'message' => 'Product deleted successfully.'
+        ]);
     }
 
     public function uploadImages(Request $request)
@@ -120,8 +122,6 @@ class ProductController extends Controller
 
         $product = Product::findOrFail($request->product_id);
 
-        Gate::authorize('update', $product);
-
         if ($product->images->count() >= 5) {
             return back()->with('error', 'You can only upload 5 images.');
         }
@@ -131,26 +131,26 @@ class ProductController extends Controller
             $product->images()->create(['path' => $imagePath, 'is_primary' => false]);
         }
 
-        return back()->with('success', 'Images uploaded successfully.');
+        return response()->json([
+            'message' => 'Images uploaded successfully.'
+        ]);
     }
 
     public function setPrimary(ProductImage $image)
     {
         $product = $image->product;
 
-        Gate::authorize('update', $product);
-
         $product->images()->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
 
-        return back()->with('success', 'Primary image updated successfully.');
+        return response()->json([
+            'message' => 'Primary image updated successfully.'
+        ]);
     }
 
     public function deleteImage(ProductImage $image)
     {
         $product = $image->product;
-        Gate::authorize('update', $product);
-
         Storage::disk('public')->delete($image->path);
 
         if ($image->isPrimary()) {
@@ -159,6 +159,8 @@ class ProductController extends Controller
 
         $image->delete();
 
-        return redirect()->back()->with('success', 'Image deleted successfully.');
+        return response()->json([
+            'message' => 'Image deleted successfully.'
+        ]);
     }
 }
