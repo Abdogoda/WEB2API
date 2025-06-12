@@ -11,6 +11,22 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'search' => 'sometimes|string',
+            'category_ids' => 'sometimes|array',
+            'category_ids.*' => 'integer|exists:categories,id',
+            'min_price' => 'sometimes|numeric|min:0',
+            'max_price' => 'sometimes|numeric|min:0',
+            'featured' => 'sometimes|boolean',
+        ]);
+        if ($request->filled('min_price') && $request->filled('max_price')) {
+            if ($request->min_price > $request->max_price) {
+                return response()->json([
+                    'message' => 'min_price cannot be greater than max_price.'
+                ], 422);
+            }
+        }
+
         $query = Product::query()->where('active', true)->where('stock', '>', 0);
 
         if ($request->filled('search')) {
