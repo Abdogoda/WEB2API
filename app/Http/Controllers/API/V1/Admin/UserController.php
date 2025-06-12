@@ -2,29 +2,25 @@
 
 namespace App\Http\Controllers\API\V1\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Role;
+use App\Http\Controllers\API\BaseApiController;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class UserController extends BaseApiController
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $users = User::all();
-        return response()->json([
-            'users' => $users
-        ]);
+        return $this->sendResponse($users, 'Users retrieved successfully');
     }
 
-    public function show(User $user)
+    public function show(User $user): JsonResponse
     {
-        return response()->json([
-            'user' => $user->load('roles')
-        ]);
+        return $this->sendResponse($user->load('roles'), 'User retrieved successfully');
     }
 
-    public function changeRole(Request $request, User $user)
+    public function changeRole(Request $request, User $user): JsonResponse
     {
         $request->validate([
             'role_ids' => 'required|array|min:1',
@@ -32,9 +28,6 @@ class UserController extends Controller
         ]);
 
         $user->roles()->sync($request->role_ids);
-        return response()->json([
-            'message' => 'Roles Changed Successfully',
-            'user' => $user->load('roles')
-        ]);
+        return $this->sendResponse($user->load('roles'), 'User roles updated successfully');
     }
 }

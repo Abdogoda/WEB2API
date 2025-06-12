@@ -2,24 +2,23 @@
 
 namespace App\Http\Controllers\API\V1\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseApiController;
 use App\Models\Product;
 use App\Models\ProductImage;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class ProductController extends Controller
+class ProductController extends BaseApiController
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $products = Product::with(['category', 'images'])->orderBy('created_at', 'desc')->get();
-        return response()->json([
-            'data' => $products
-        ]);
+        return $this->sendResponse($products, 'Products retrieved successfully.');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:products,name',
@@ -50,33 +49,24 @@ class ProductController extends Controller
             }
         }
 
-        return response()->json([
-            'data' => $product,
-            'message' => 'Product Created Successfully'
-        ], 201);
+        return $this->sendResponse($product, 'Product created successfully', 201);
     }
 
-    public function show(Product $product)
+    public function show(Product $product): JsonResponse
     {
-        $product->load(['category', 'images']);
-
-        return response()->json([
-            'data' => $product
-        ]);
+        return $this->sendResponse($product->load(['category', 'images']), 'Product retrieved successfully.');
     }
 
-    public function simillerProducts(Product $product)
+    public function simillerProducts(Product $product): JsonResponse
     {
         $simillarProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->inRandomOrder()->limit(6)->get();
 
-        return response()->json([
-            'data' => $simillarProducts
-        ]);
+        return $this->sendResponse($simillarProducts, 'Simillar products fetched successfully.');
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product): JsonResponse
     {
         $data = $request->validate([
             'name' => 'sometimes|string|max:255|unique:products,name,' . $product->id,
@@ -95,25 +85,20 @@ class ProductController extends Controller
 
         $product->update($data);
 
-        return response()->json([
-            'data' => $product,
-            'message' => 'Product updated successfully.'
-        ]);
+        return $this->sendResponse($product, 'Product updated successfully.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Product $product): JsonResponse
     {
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();
-        return response()->json([
-            'message' => 'Product deleted successfully.'
-        ]);
+        return $this->sendResponse(message: 'Product deleted successfully.');
     }
 
-    public function uploadImages(Request $request)
+    public function uploadImages(Request $request): JsonResponse
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
@@ -123,7 +108,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($request->product_id);
 
         if ($product->images->count() >= 5) {
-            return back()->with('error', 'You can only upload 5 images.');
+            return $this->sendError('You can only upload 5 images.', 422);
         }
 
         foreach ($request->file('images') as $index => $image) {
@@ -131,24 +116,20 @@ class ProductController extends Controller
             $product->images()->create(['path' => $imagePath, 'is_primary' => false]);
         }
 
-        return response()->json([
-            'message' => 'Images uploaded successfully.'
-        ]);
+        return $this->sendResponse(message: 'Images uploaded successfully.');
     }
 
-    public function setPrimary(ProductImage $image)
+    public function setPrimary(ProductImage $image): JsonResponse
     {
         $product = $image->product;
 
         $product->images()->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
 
-        return response()->json([
-            'message' => 'Primary image updated successfully.'
-        ]);
+        return $this->sendResponse($image, 'Primary image set successfully.');
     }
 
-    public function deleteImage(ProductImage $image)
+    public function deleteImage(ProductImage $image): JsonResponse
     {
         $product = $image->product;
         Storage::disk('public')->delete($image->path);
@@ -159,8 +140,6 @@ class ProductController extends Controller
 
         $image->delete();
 
-        return response()->json([
-            'message' => 'Image deleted successfully.'
-        ]);
+        return $this->sendResponse(message: 'Image deleted successfully.');
     }
 }

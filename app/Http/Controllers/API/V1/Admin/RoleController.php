@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers\API\V1\Admin;
 
+use App\Http\Controllers\API\BaseApiController;
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
 use App\Models\Role;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class RoleController extends Controller
+class RoleController extends BaseApiController
 {
-    public function index()
+    public function index(): JsonResponse
     {
         $roles = Role::with('permissions')->get();
-        return response()->json([
-            'roles' => $roles
-        ]);
+        return $this->sendResponse($roles, 'Roles retrieved successfully');
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         $request->validate([
             'name' => 'required|string|max:50|unique:roles,name',
@@ -26,20 +26,16 @@ class RoleController extends Controller
         $role = Role::create([
             'name' => $request->name
         ]);
-        return response()->json([
-            'message' => 'Role created successfully',
-            'role' => $role
-        ], 201);
+
+        return $this->sendResponse($role, 'Role created successfully', 201);
     }
 
-    public function show(Role $role)
+    public function show(Role $role): JsonResponse
     {
-        return response()->json([
-            'role' => $role->load('permissions')
-        ]);
+        return $this->sendResponse($role->load('permissions'), 'Role retrieved successfully');
     }
 
-    public function update(Request $request, Role $role)
+    public function update(Request $request, Role $role): JsonResponse
     {
         $request->validate([
             'name' => 'sometimes|string|max:50|unique:roles,name,' . $role->id,
@@ -61,13 +57,10 @@ class RoleController extends Controller
         }
         $role->save();
 
-        return response()->json([
-            'message' => 'Role updated successfully',
-            'role' => $role->load('permissions')
-        ]);
+        return $this->sendResponse($role->load('permissions'), 'Role updated successfully');
     }
 
-    public function destroy(Role $role)
+    public function destroy(Role $role): JsonResponse
     {
         if ($role->name == 'Owner') {
             return response()->json([
@@ -75,16 +68,12 @@ class RoleController extends Controller
             ], 403);
         }
         $role->delete();
-        return response()->json([
-            'message' => 'Role deleted successfully'
-        ]);
+        return $this->sendResponse(message: 'Role deleted successfully');
     }
 
-    public function permissions()
+    public function permissions(): JsonResponse
     {
         $permissions = Permission::all();
-        return response()->json([
-            'permissions' => $permissions
-        ]);
+        return $this->sendResponse($permissions, 'Permissions retrieved successfully');
     }
 }

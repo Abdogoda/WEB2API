@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\API\V1\User;
 
-use App\Http\Controllers\Controller;
-
+use App\Http\Controllers\API\BaseApiController;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class ProductController extends BaseApiController
 {
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'search' => 'sometimes|string',
@@ -52,17 +52,13 @@ class ProductController extends Controller
         $perPage = $request->input('per_page', 12);
         $products = $query->paginate($perPage);
 
-        return response()->json([
-            'data' => $products
-        ]);
+        return $this->sendResponse($products, 'Products retrieved successfully.');
     }
 
     public function show(Product $product)
     {
         $product->load(['category', 'images']);
-        return response()->json([
-            'data' => $product
-        ]);
+        return $this->sendResponse($product, 'Product retrieved successfully.');
     }
 
     public function simillarProducts(Product $product)
@@ -74,9 +70,7 @@ class ProductController extends Controller
             ->limit(8)
             ->get();
 
-        return response()->json([
-            'data' => $similarProducts
-        ]);
+        return $this->sendResponse($similarProducts, 'Similar products fetched successfully.');
     }
 
     public function featuredProducts()
@@ -87,9 +81,7 @@ class ProductController extends Controller
             ->limit(8)
             ->get();
 
-        return response()->json([
-            'data' => $featuredProducts
-        ]);
+        return $this->sendResponse($featuredProducts, 'Featured products fetched successfully.');
     }
 
     public function latestProducts()
@@ -100,8 +92,6 @@ class ProductController extends Controller
             ->limit(8)
             ->get();
 
-        return response()->json([
-            'data' => $latestProducts
-        ]);
+        return $this->sendResponse($latestProducts, 'Latest products fetched successfully.');
     }
 }
