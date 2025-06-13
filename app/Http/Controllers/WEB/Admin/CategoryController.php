@@ -26,17 +26,15 @@ class CategoryController extends Controller
     {
         Gate::authorize('create', Category::class);
 
-        $imagePath = null;
+        $data = $request->validated();
+
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $data['image'] = $request->file('image')->store('categories', 'public');
         }
 
-        Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'image' => $imagePath,
-            'description' => $request->description,
-        ]);
+        $data['slug'] = Str::slug($request->name);
+
+        Category::create($data);
 
         return back()->with('success', 'Category created successfully.');
     }
@@ -60,15 +58,12 @@ class CategoryController extends Controller
                 Storage::disk('public')->delete($category->image);
             }
             $imagePath = $request->file('image')->store('categories', 'public');
-            $category->image = $imagePath;
+            $data['image'] = $imagePath;
         }
 
-        $category->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'image' => $category->image,
-        ]);
+        $data['slug'] = Str::slug($request->name ?? $category->name);
+
+        $category->update($data);
 
         return back()->with('success', 'Category updated successfully.');
     }

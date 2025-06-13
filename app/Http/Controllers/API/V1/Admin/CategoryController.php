@@ -22,17 +22,15 @@ class CategoryController extends BaseApiController
 
     public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $imagePath = null;
+        $data = $request->validated();
+
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('categories', 'public');
+            $data['image'] = $request->file('image')->store('categories', 'public');
         }
 
-        $category = Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'image' => $imagePath,
-            'description' => $request->description,
-        ]);
+        $data['slug'] = Str::slug($request->name);
+
+        $category = Category::create($data);
 
         return $this->sendResponse(new CategoryResource($category), 'Category created successfully.', 201);
     }
@@ -52,7 +50,7 @@ class CategoryController extends BaseApiController
                 Storage::disk('public')->delete($category->image);
             }
             $imagePath = $request->file('image')->store('categories', 'public');
-            $category->image = $imagePath;
+            $data['image'] = $imagePath;
         }
 
         $data['slug'] = Str::slug($request->name ?? $category->name);

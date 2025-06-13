@@ -5,6 +5,7 @@ namespace App\Http\Controllers\WEB\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Requests\Product\UploadProductImageRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
@@ -67,6 +68,7 @@ class ProductController extends Controller
         Gate::authorize('update', $product);
 
         $data = $request->validated();
+
         $data['slug'] = Str::slug($request->name ?? $product->name);
         $data['active'] = $request->active ? true : false;
         $data['featured'] = $request->featured ? true : false;
@@ -88,13 +90,8 @@ class ProductController extends Controller
         return back()->with('success', 'Product deleted successfully.');
     }
 
-    public function uploadImages(Request $request)
+    public function uploadImages(UploadProductImageRequest $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'images.*' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
-        ]);
-
         $product = Product::findOrFail($request->product_id);
 
         Gate::authorize('update', $product);
