@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\User;
 
 use App\Http\Controllers\API\BaseApiController;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -52,13 +53,13 @@ class ProductController extends BaseApiController
         $perPage = $request->input('per_page', 12);
         $products = $query->paginate($perPage);
 
-        return $this->sendResponse($products, 'Products retrieved successfully.');
+        return $this->sendResponse(ProductResource::collection($products), 'Products retrieved successfully.');
     }
 
     public function show(Product $product)
     {
         $product->load(['category', 'images']);
-        return $this->sendResponse($product, 'Product retrieved successfully.');
+        return $this->sendResponse(new ProductResource($product), 'Product retrieved successfully.');
     }
 
     public function simillarProducts(Product $product)
@@ -70,7 +71,7 @@ class ProductController extends BaseApiController
             ->limit(8)
             ->get();
 
-        return $this->sendResponse($similarProducts, 'Similar products fetched successfully.');
+        return $this->sendResponse(ProductResource::collection($similarProducts), 'Similar products fetched successfully.');
     }
 
     public function featuredProducts()
@@ -81,7 +82,7 @@ class ProductController extends BaseApiController
             ->limit(8)
             ->get();
 
-        return $this->sendResponse($featuredProducts, 'Featured products fetched successfully.');
+        return $this->sendResponse(ProductResource::collection($featuredProducts), 'Featured products fetched successfully.');
     }
 
     public function latestProducts()
@@ -92,6 +93,6 @@ class ProductController extends BaseApiController
             ->limit(8)
             ->get();
 
-        return $this->sendResponse($latestProducts, 'Latest products fetched successfully.');
+        return $this->sendResponse(ProductResource::collection($latestProducts), 'Latest products fetched successfully.');
     }
 }

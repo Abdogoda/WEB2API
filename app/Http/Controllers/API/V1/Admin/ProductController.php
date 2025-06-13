@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
+use App\Http\Resources\ProductImageResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\JsonResponse;
@@ -15,7 +17,8 @@ class ProductController extends BaseApiController
     public function index(): JsonResponse
     {
         $products = Product::with(['category', 'images'])->orderBy('created_at', 'desc')->get();
-        return $this->sendResponse($products, 'Products retrieved successfully.');
+
+        return $this->sendResponse(ProductResource::collection($products), 'Products retrieved successfully.');
     }
 
     public function store(Request $request): JsonResponse
@@ -49,12 +52,12 @@ class ProductController extends BaseApiController
             }
         }
 
-        return $this->sendResponse($product, 'Product created successfully', 201);
+        return $this->sendResponse(new ProductResource($product->load(['category', 'images'])), 'Product created successfully', 201);
     }
 
     public function show(Product $product): JsonResponse
     {
-        return $this->sendResponse($product->load(['category', 'images']), 'Product retrieved successfully.');
+        return $this->sendResponse(new ProductResource($product->load(['category', 'images'])), 'Product retrieved successfully.');
     }
 
     public function simillerProducts(Product $product): JsonResponse
@@ -63,7 +66,7 @@ class ProductController extends BaseApiController
             ->where('id', '!=', $product->id)
             ->inRandomOrder()->limit(6)->get();
 
-        return $this->sendResponse($simillarProducts, 'Simillar products fetched successfully.');
+        return $this->sendResponse(ProductResource::collection($simillarProducts), 'Simillar products fetched successfully.');
     }
 
     public function update(Request $request, Product $product): JsonResponse
@@ -85,7 +88,7 @@ class ProductController extends BaseApiController
 
         $product->update($data);
 
-        return $this->sendResponse($product, 'Product updated successfully.');
+        return $this->sendResponse(new ProductResource($product->load(['category', 'images'])), 'Product updated successfully.');
     }
 
     public function destroy(Product $product): JsonResponse
@@ -126,7 +129,7 @@ class ProductController extends BaseApiController
         $product->images()->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
 
-        return $this->sendResponse($image, 'Primary image set successfully.');
+        return $this->sendResponse(new ProductImageResource($image), 'Primary image set successfully.');
     }
 
     public function deleteImage(ProductImage $image): JsonResponse

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PermissionResource;
+use App\Http\Resources\RoleResource;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +16,7 @@ class RoleController extends BaseApiController
     public function index(): JsonResponse
     {
         $roles = Role::with('permissions')->get();
-        return $this->sendResponse($roles, 'Roles retrieved successfully');
+        return $this->sendResponse(RoleResource::collection($roles), 'Roles retrieved successfully.');
     }
 
     public function store(Request $request): JsonResponse
@@ -26,13 +28,13 @@ class RoleController extends BaseApiController
         $role = Role::create([
             'name' => $request->name
         ]);
-
-        return $this->sendResponse($role, 'Role created successfully', 201);
+        return $this->sendResponse(new RoleResource($role), 'Role created successfully', 201);
     }
 
     public function show(Role $role): JsonResponse
     {
-        return $this->sendResponse($role->load('permissions'), 'Role retrieved successfully');
+        $role->load('permissions');
+        return $this->sendResponse(new RoleResource($role), 'Role retrieved successfully.');
     }
 
     public function update(Request $request, Role $role): JsonResponse
@@ -56,8 +58,7 @@ class RoleController extends BaseApiController
             $role->permissions()->sync($request->permissions);
         }
         $role->save();
-
-        return $this->sendResponse($role->load('permissions'), 'Role updated successfully');
+        return $this->sendResponse(new RoleResource($role->load('permissions')), 'Role updated successfully');
     }
 
     public function destroy(Role $role): JsonResponse
@@ -74,6 +75,6 @@ class RoleController extends BaseApiController
     public function permissions(): JsonResponse
     {
         $permissions = Permission::all();
-        return $this->sendResponse($permissions, 'Permissions retrieved successfully');
+        return $this->sendResponse(PermissionResource::collection($permissions), 'Permissions retrieved successfully');
     }
 }
