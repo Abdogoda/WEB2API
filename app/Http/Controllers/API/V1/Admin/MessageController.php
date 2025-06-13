@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
+use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 
@@ -13,20 +14,20 @@ class MessageController extends BaseApiController
         $messages = Message::latest()->paginate(10);
         $unreadMessagesCount = Message::where('is_read', 0)->count();
         return $this->sendResponse([
-            'messages' => $messages,
+            'messages' => MessageResource::collection($messages),
             'unread_count' => $unreadMessagesCount
         ], 'Messages retrieved successfully');
     }
 
     public function show(Message $message): JsonResponse
     {
-        return $this->sendResponse($message, 'Message retrieved successfully');
+        return $this->sendResponse(new MessageResource($message), 'Message retrieved successfully');
     }
 
     public function markAsRead(Message $message): JsonResponse
     {
         $message->update(['is_read' => 1]);
-        return $this->sendResponse($message, 'Message marked as read');
+        return $this->sendResponse(new MessageResource($message), 'Message marked as read');
     }
 
     public function markAllAsRead(): JsonResponse

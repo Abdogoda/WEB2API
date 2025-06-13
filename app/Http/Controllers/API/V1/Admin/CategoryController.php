@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class CategoryController extends BaseApiController
     public function index(): JsonResponse
     {
         $categories = Category::withCount('products')->orderBy('created_at', 'desc')->get();
-        return $this->sendResponse($categories, 'Categories retrieved successfully.');
+        return $this->sendResponse(CategoryResource::collection($categories), 'Categories retrieved successfully.');
     }
 
     public function store(Request $request): JsonResponse
@@ -37,13 +38,13 @@ class CategoryController extends BaseApiController
             'description' => $request->description,
         ]);
 
-        return $this->sendResponse($category, 'Category created successfully.', 201);
+        return $this->sendResponse(new CategoryResource($category), 'Category created successfully.', 201);
     }
 
     public function show(Category $category): JsonResponse
     {
         $category->load('products');
-        return $this->sendResponse($category, 'Category retrieved successfully.');
+        return $this->sendResponse(new CategoryResource($category), 'Category retrieved successfully.');
     }
 
     public function update(Request $request, Category $category): JsonResponse
@@ -66,7 +67,7 @@ class CategoryController extends BaseApiController
 
         $category->update($data);
 
-        return $this->sendResponse($category, 'Category updated successfully.');
+        return $this->sendResponse(new CategoryResource($category), 'Category updated successfully.');
     }
 
     public function destroy(Category $category): JsonResponse
