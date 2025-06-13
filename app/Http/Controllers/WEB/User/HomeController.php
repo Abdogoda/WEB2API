@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WEB\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Message\StoreMessageRequest;
 use App\Models\Category;
 use App\Models\Message;
 use App\Models\Product;
@@ -20,13 +21,9 @@ class HomeController extends Controller
         return view('user.home', compact('categories', 'latestProducts', 'featuredProducts'));
     }
 
-    public function contactUs(Request $request)
+    public function contactUs(StoreMessageRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'message' => 'required|string'
-        ]);
+        $data = $request->validated();
 
         Message::create($data);
         return back()->with('success', 'Message sent successfully');

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -20,15 +22,9 @@ class CategoryController extends Controller
         return view('admin.categories.index', compact('categories'));
     }
 
-    public function store(Request $request)
+    public function store(StoreCategoryRequest $request)
     {
         Gate::authorize('create', Category::class);
-
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
-            'description' => 'nullable|string',
-        ]);
 
         $imagePath = null;
         if ($request->hasFile('image')) {
@@ -53,15 +49,11 @@ class CategoryController extends Controller
         return view('admin.categories.show', compact('category'));
     }
 
-    public function update(Request $request, Category $category)
+    public function update(UpdateCategoryRequest $request, Category $category)
     {
         Gate::authorize('update', $category);
 
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'image' => 'sometimes|image|mimes:jpg,png,jpeg,gif|max:2048',
-            'description' => 'nullable|string',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
             if ($category->image) {

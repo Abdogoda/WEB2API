@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Resources\ProductImageResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
@@ -21,19 +23,8 @@ class ProductController extends BaseApiController
         return $this->sendResponse(ProductResource::collection($products), 'Products retrieved successfully.');
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreProductRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:products,name',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|gt:0',
-            'stock' => 'required|numeric|gt:0',
-            'active' => 'nullable|in:on,off',
-            'featured' => 'nullable|in:on,off',
-            'images.*' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
-        ]);
-
         $product = Product::create([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
@@ -69,17 +60,9 @@ class ProductController extends BaseApiController
         return $this->sendResponse(ProductResource::collection($simillarProducts), 'Simillar products fetched successfully.');
     }
 
-    public function update(Request $request, Product $product): JsonResponse
+    public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
-        $data = $request->validate([
-            'name' => 'sometimes|string|max:255|unique:products,name,' . $product->id,
-            'description' => 'nullable|string',
-            'category_id' => 'sometimes|exists:categories,id',
-            'price' => 'sometimes|numeric|gt:0',
-            'stock' => 'sometimes|numeric|gt:0',
-            'active' => 'nullable|in:on,off',
-            'featured' => 'nullable|in:on,off',
-        ]);
+        $data = $request->validated();
 
         $data['slug'] = Str::slug($request->name ?? $product->name);
         $data['active'] = $request->active ? true : false;

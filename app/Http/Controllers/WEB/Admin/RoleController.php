@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Role\StoreRoleRequest;
+use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Http\Request;
@@ -20,13 +22,9 @@ class RoleController extends Controller
         return view('admin.roles.index', compact('roles', 'permissions'));
     }
 
-    public function store(Request $request)
+    public function store(StoreRoleRequest $request)
     {
         Gate::authorize('create', Role::class);
-
-        $request->validate([
-            'name' => 'required|string|max:50|unique:roles,name',
-        ]);
 
         Role::create([
             'name' => $request->name
@@ -34,15 +32,9 @@ class RoleController extends Controller
         return back()->with('success', 'Role created successfully');
     }
 
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role)
     {
         Gate::authorize('update', $role);
-
-        $request->validate([
-            'name' => 'required|string|max:50|unique:roles,name,' . $role->id,
-            'permissions' => 'required|array',
-            'permissions.*' => 'required|exists:permissions,id'
-        ]);
 
         if ($role->name == 'Owner') {
             return back()->with('error', 'You cannot update this role');

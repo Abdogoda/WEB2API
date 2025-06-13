@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
+use App\Http\Requests\User\ChangeUserRoleRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -22,13 +23,8 @@ class UserController extends BaseApiController
         return $this->sendResponse(new UserResource($user), 'User retrieved successfully.');
     }
 
-    public function changeRole(Request $request, User $user): JsonResponse
+    public function changeRole(ChangeUserRoleRequest $request, User $user): JsonResponse
     {
-        $request->validate([
-            'role_ids' => 'required|array|min:1',
-            'role_ids.*' => 'required|exists:roles,id'
-        ]);
-
         $user->roles()->sync($request->role_ids);
         return $this->sendResponse($user->load('roles'), 'User roles updated successfully');
     }

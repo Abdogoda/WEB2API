@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
@@ -22,20 +24,9 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products', 'categories'));
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
         Gate::authorize('create', Product::class);
-
-        $request->validate([
-            'name' => 'required|string|max:255|unique:products,name',
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|gt:0',
-            'stock' => 'required|numeric|gt:0',
-            'active' => 'nullable|in:on,off',
-            'featured' => 'nullable|in:on,off',
-            'images.*' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
-        ]);
 
         $product = Product::create([
             'name' => $request->name,
@@ -71,30 +62,16 @@ class ProductController extends Controller
         return view('admin.products.show', compact('product', 'simillarProducts', 'categories'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
         Gate::authorize('update', $product);
 
-        $request->validate([
-            'name' => 'required|string|max:255|unique:products,name,' . $product->id,
-            'description' => 'nullable|string',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|gt:0',
-            'stock' => 'required|numeric|gt:0',
-            'active' => 'nullable|in:on,off',
-            'featured' => 'nullable|in:on,off',
-        ]);
+        $data = $request->validated();
+        $data['slug'] = Str::slug($request->name ?? $product->name);
+        $data['active'] = $request->active ? true : false;
+        $data['featured'] = $request->featured ? true : false;
 
-        $product->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-            'description' => $request->description,
-            'category_id' => $request->category_id,
-            'price' => $request->price,
-            'stock' => $request->stock,
-            'active' => $request->active ? true : false,
-            'featured' => $request->featured ? true : false
-        ]);
+        $product->update($data);
 
         return back()->with('success', 'Product updated successfully.');
     }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Role\StoreRoleRequest;
+use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
 use App\Models\Permission;
@@ -19,12 +21,8 @@ class RoleController extends BaseApiController
         return $this->sendResponse(RoleResource::collection($roles), 'Roles retrieved successfully.');
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreRoleRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:50|unique:roles,name',
-        ]);
-
         $role = Role::create([
             'name' => $request->name
         ]);
@@ -37,14 +35,8 @@ class RoleController extends BaseApiController
         return $this->sendResponse(new RoleResource($role), 'Role retrieved successfully.');
     }
 
-    public function update(Request $request, Role $role): JsonResponse
+    public function update(UpdateRoleRequest $request, Role $role): JsonResponse
     {
-        $request->validate([
-            'name' => 'sometimes|string|max:50|unique:roles,name,' . $role->id,
-            'permissions' => 'sometimes|array',
-            'permissions.*' => 'required|exists:permissions,id'
-        ]);
-
         if ($role->name == 'Owner') {
             return response()->json([
                 'error' => 'You cannot update this role'

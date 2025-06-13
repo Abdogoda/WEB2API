@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\BaseApiController;
+use App\Http\Requests\Category\StoreCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
@@ -18,14 +20,8 @@ class CategoryController extends BaseApiController
         return $this->sendResponse(CategoryResource::collection($categories), 'Categories retrieved successfully.');
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreCategoryRequest $request): JsonResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-            'image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:2048',
-            'description' => 'nullable|string',
-        ]);
-
         $imagePath = null;
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('categories', 'public');
@@ -47,13 +43,9 @@ class CategoryController extends BaseApiController
         return $this->sendResponse(new CategoryResource($category), 'Category retrieved successfully.');
     }
 
-    public function update(Request $request, Category $category): JsonResponse
+    public function update(UpdateCategoryRequest $request, Category $category): JsonResponse
     {
-        $data = $request->validate([
-            'name' => 'sometimes|string|max:255|unique:categories,name,' . $category->id,
-            'image' => 'sometimes|image|mimes:jpg,png,jpeg,gif|max:2048',
-            'description' => 'nullable|string',
-        ]);
+        $data = $request->validated();
 
         if ($request->hasFile('image')) {
             if ($category->image) {
