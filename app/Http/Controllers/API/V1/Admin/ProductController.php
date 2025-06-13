@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\Admin;
 use App\Http\Controllers\API\BaseApiController;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Requests\Product\UploadProductImageRequest;
 use App\Http\Resources\ProductImageResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
@@ -68,7 +69,6 @@ class ProductController extends BaseApiController
         $data['active'] = $request->active ? true : false;
         $data['featured'] = $request->featured ? true : false;
 
-
         $product->update($data);
 
         return $this->sendResponse(new ProductResource($product->load(['category', 'images'])), 'Product updated successfully.');
@@ -84,13 +84,8 @@ class ProductController extends BaseApiController
         return $this->sendResponse(message: 'Product deleted successfully.');
     }
 
-    public function uploadImages(Request $request): JsonResponse
+    public function uploadImages(UploadProductImageRequest $request): JsonResponse
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'images.*' => 'required|image|mimes:jpg,png,jpeg,gif|max:2048',
-        ]);
-
         $product = Product::findOrFail($request->product_id);
 
         if ($product->images->count() >= 5) {
