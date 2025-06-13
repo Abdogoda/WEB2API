@@ -6,7 +6,7 @@ use App\Http\Controllers\API\BaseApiController;
 use App\Http\Requests\User\ChangeUserRoleRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
-use App\Services\Admin\UserService;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 
 class UserController extends BaseApiController

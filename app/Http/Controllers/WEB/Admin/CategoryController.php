@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Models\Category;
-use App\Services\Admin\CategoryService;
+use App\Services\CategoryService;
 use Illuminate\Support\Facades\Gate;
 
 class CategoryController extends Controller

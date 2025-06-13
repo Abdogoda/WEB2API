@@ -8,34 +8,18 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\Product\ListProductRequest;
+use App\Services\ProductService;
 
 class ProductController extends BaseApiController
 {
+    public function __construct(
+        protected ProductService $productService
+    ) {
+
+    }
     public function index(ListProductRequest $request): JsonResponse
     {
-        $query = Product::query()->where('active', true)->where('stock', '>', 0);
-
-        if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
-        }
-
-        if ($request->has('category_ids') && is_array($request->category_ids)) {
-            $query->whereIn('category_id', $request->category_ids);
-        }
-
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        }
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        if ($request->has('featured')) {
-            $query->where('featured', true);
-        }
-
-        $perPage = $request->input('per_page', 12);
-        $products = $query->paginate($perPage);
+        $products = $this->productService->getFilteredProducts($request->validated());
 
         return $this->sendResponse(ProductResource::collection($products), 'Products retrieved successfully.');
     }
@@ -48,34 +32,21 @@ class ProductController extends BaseApiController
 
     public function simillarProducts(Product $product)
     {
-        $similarProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->where('active', true)
-            ->where('stock', '>', 0)
-            ->limit(8)
-            ->get();
+        $similarProducts = $this->productService->simillarProducts($product);
 
         return $this->sendResponse(ProductResource::collection($similarProducts), 'Similar products fetched successfully.');
     }
 
     public function featuredProducts()
     {
-        $featuredProducts = Product::where('active', true)
-            ->where('featured', true)
-            ->where('stock', '>', 0)
-            ->limit(8)
-            ->get();
+        $featuredProducts = $this->productService->getFeaturedProducts();
 
         return $this->sendResponse(ProductResource::collection($featuredProducts), 'Featured products fetched successfully.');
     }
 
     public function latestProducts()
     {
-        $latestProducts = Product::where('active', true)
-            ->where('stock', '>', 0)
-            ->latest()
-            ->limit(8)
-            ->get();
+        $latestProducts = $this->productService->getLatestProducts();
 
         return $this->sendResponse(ProductResource::collection($latestProducts), 'Latest products fetched successfully.');
     }

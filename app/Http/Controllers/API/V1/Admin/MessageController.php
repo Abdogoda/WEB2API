@@ -6,7 +6,7 @@ use App\Http\Controllers\API\BaseApiController;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
-use App\Services\Admin\MessageService;
+use App\Services\MessageService;
 
 class MessageController extends BaseApiController
 {

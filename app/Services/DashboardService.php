@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Services;
 
 use App\Models\Category;
 use App\Models\Message;

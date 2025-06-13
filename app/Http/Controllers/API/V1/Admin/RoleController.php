@@ -10,7 +10,7 @@ use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Services\Admin\RoleService;
+use App\Services\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

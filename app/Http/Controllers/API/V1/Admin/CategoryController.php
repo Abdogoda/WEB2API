@@ -7,7 +7,7 @@ use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
-use App\Services\Admin\CategoryService;
+use App\Services\CategoryService;
 use Illuminate\Http\JsonResponse;
 
 class CategoryController extends BaseApiController
