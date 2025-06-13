@@ -6,26 +6,30 @@ use App\Http\Controllers\API\BaseApiController;
 use App\Http\Requests\User\ChangeUserRoleRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\Admin\UserService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class UserController extends BaseApiController
 {
+    public function __construct(protected UserService $userService)
+    {
+    }
+
     public function index(): JsonResponse
     {
-        $users = User::with(['roles', 'messages'])->get();
+        $users = $this->userService->getAllUsers();
         return $this->sendResponse(UserResource::collection($users), 'Users retrieved successfully.');
     }
 
     public function show(User $user): JsonResponse
     {
-        $user->load(['roles', 'messages']);
+        $user = $this->userService->getUser($user);
         return $this->sendResponse(new UserResource($user), 'User retrieved successfully.');
     }
 
     public function changeRole(ChangeUserRoleRequest $request, User $user): JsonResponse
     {
-        $user->roles()->sync($request->role_ids);
-        return $this->sendResponse($user->load('roles'), 'User roles updated successfully');
+        $user = $this->userService->changeUserRoles($user, $request->role_ids);
+        return $this->sendResponse($user, 'User roles updated successfully');
     }
 }

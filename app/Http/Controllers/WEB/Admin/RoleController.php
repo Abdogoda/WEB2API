@@ -7,18 +7,26 @@ use App\Http\Requests\Role\StoreRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Services\Admin\PermissionService;
+use App\Services\Admin\RoleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class RoleController extends Controller
 {
 
+    public function __construct(
+        protected RoleService $roleService,
+        protected PermissionService $permissionService
+    ) {
+    }
+
     public function index()
     {
         Gate::authorize('viewAny', Role::class);
 
-        $roles = Role::with('permissions')->get();
-        $permissions = Permission::all();
+        $roles = $this->roleService->getAllRoles();
+        $permissions = $this->permissionService->getAllPermissions();
         return view('admin.roles.index', compact('roles', 'permissions'));
     }
 
@@ -26,9 +34,7 @@ class RoleController extends Controller
     {
         Gate::authorize('create', Role::class);
 
-        Role::create([
-            'name' => $request->name
-        ]);
+        $role = $this->roleService->createRole($request->validated());
         return back()->with('success', 'Role created successfully');
     }
 
@@ -40,8 +46,7 @@ class RoleController extends Controller
             return back()->with('error', 'You cannot update this role');
         }
 
-        $role->update(['name' => $request->name]);
-        $role->permissions()->sync($request->permissions);
+        $role = $this->roleService->updateRole($request->validated(), $role);
         return back()->with('success', 'Role updated successfully');
     }
 

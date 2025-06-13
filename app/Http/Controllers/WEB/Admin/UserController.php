@@ -4,20 +4,26 @@ namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\ChangeUserRoleRequest;
-use App\Models\Role;
 use App\Models\User;
-use Illuminate\Http\Request;
+use App\Services\Admin\RoleService;
 use Illuminate\Support\Facades\Gate;
+use App\Services\Admin\UserService;
 
 class UserController extends Controller
 {
+    public function __construct(
+        protected UserService $userService,
+        protected RoleService $roleService
+    ) {
+    }
 
     public function index()
     {
         Gate::authorize('viewAny', User::class);
 
-        $users = User::all();
-        $roles = Role::where('name', '!=', 'Owner')->get();
+        $users = $this->userService->getAllUsers();
+        $roles = $this->roleService->getExcepteOwnerRoles();
+
         return view('admin.users.index', compact('users', 'roles'));
     }
 
@@ -25,7 +31,8 @@ class UserController extends Controller
     {
         Gate::authorize('changeRoles', $user);
 
-        $user->roles()->sync($request->role_ids);
+        $this->userService->changeUserRoles($user, $request->role_ids);
+
         return back()->with('success', 'Roles Changed Successfully');
     }
 }

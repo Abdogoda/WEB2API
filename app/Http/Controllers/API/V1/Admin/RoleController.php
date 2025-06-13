@@ -10,22 +10,26 @@ use App\Http\Resources\PermissionResource;
 use App\Http\Resources\RoleResource;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Services\Admin\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class RoleController extends BaseApiController
 {
+
+    public function __construct(protected RoleService $roleService)
+    {
+    }
+
     public function index(): JsonResponse
     {
-        $roles = Role::with('permissions')->get();
+        $roles = $this->roleService->getAllRoles();
         return $this->sendResponse(RoleResource::collection($roles), 'Roles retrieved successfully.');
     }
 
     public function store(StoreRoleRequest $request): JsonResponse
     {
-        $role = Role::create([
-            'name' => $request->name
-        ]);
+        $role = $this->roleService->createRole($request->validated());
         return $this->sendResponse(new RoleResource($role), 'Role created successfully', 201);
     }
 
@@ -43,13 +47,7 @@ class RoleController extends BaseApiController
             ], 403);
         }
 
-        if ($request->has('name')) {
-            $role->name = $request->name;
-        }
-        if ($request->has('permissions')) {
-            $role->permissions()->sync($request->permissions);
-        }
-        $role->save();
+        $role = $this->roleService->updateRole($request->validated(), $role);
         return $this->sendResponse(new RoleResource($role->load('permissions')), 'Role updated successfully');
     }
 

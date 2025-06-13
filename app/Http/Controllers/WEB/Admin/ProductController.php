@@ -9,19 +9,26 @@ use App\Http\Requests\Product\UploadProductImageRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
-use Illuminate\Http\Request;
+use App\Services\Admin\CategoryService;
+use App\Services\Admin\ProductService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        protected ProductService $productService,
+        protected CategoryService $categoryService
+    ) {
+    }
     public function index()
     {
         Gate::authorize('viewAny', Product::class);
 
-        $products = Product::with(['category', 'images'])->orderBy('created_at', 'desc')->get();
-        $categories = Category::all();
+        $products = $this->productService->listProducts();
+        $categories = $this->categoryService->getAllCategories();
+
         return view('admin.products.index', compact('products', 'categories'));
     }
 

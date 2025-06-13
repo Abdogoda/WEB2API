@@ -6,13 +6,18 @@ use App\Http\Controllers\API\BaseApiController;
 use App\Http\Resources\MessageResource;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
+use App\Services\Admin\MessageService;
 
 class MessageController extends BaseApiController
 {
+    public function __construct(protected MessageService $messageService)
+    {
+    }
+
     public function index(): JsonResponse
     {
-        $messages = Message::latest()->paginate(10);
-        $unreadMessagesCount = Message::where('is_read', 0)->count();
+        $messages = $this->messageService->getPaginatedMessages();
+        $unreadMessagesCount = $this->messageService->getUnreadCount();
         return $this->sendResponse([
             'messages' => MessageResource::collection($messages),
             'unread_count' => $unreadMessagesCount
@@ -21,24 +26,25 @@ class MessageController extends BaseApiController
 
     public function show(Message $message): JsonResponse
     {
+        $message = $this->messageService->getMessage($message);
         return $this->sendResponse(new MessageResource($message), 'Message retrieved successfully');
     }
 
     public function markAsRead(Message $message): JsonResponse
     {
-        $message->update(['is_read' => 1]);
+        $message = $this->messageService->markAsRead($message);
         return $this->sendResponse(new MessageResource($message), 'Message marked as read');
     }
 
     public function markAllAsRead(): JsonResponse
     {
-        Message::where('is_read', 0)->update(['is_read' => 1]);
+        $this->messageService->markAllAsRead();
         return $this->sendResponse(message: 'All messages marked as read');
     }
 
     public function destroy(Message $message): JsonResponse
     {
-        $message->delete();
+        $this->messageService->deleteMessage($message);
         return $this->sendResponse(message: 'Message deleted successfully');
     }
 }
