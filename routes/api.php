@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\V1\Admin\RoleController;
 use App\Http\Controllers\API\V1\Admin\UserController;
 use App\Http\Controllers\API\V1\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\API\V1\Admin\DashboardController;
 use App\Http\Controllers\API\V1\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\API\V1\Admin\MessageController as AdminMessageController;
 use App\Http\Controllers\API\V1\User\CategoryController;
@@ -22,6 +23,9 @@ Route::post('/contact-us', [MessageController::class, 'store']);
 
 
 Route::prefix('admin')->group(function () {
+
+    // Dashboard
+    Route::get('dashboard', [DashboardController::class, 'index']);
 
     // User management
     Route::apiResource('users', UserController::class);
