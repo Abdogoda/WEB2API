@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Services;
 
 use App\Models\Message;
 
@@ -35,5 +35,10 @@ class MessageService
   public function deleteMessage(Message $message)
   {
     $message->delete();
+  }
+
+  public function createMessage(array $data)
+  {
+    return Message::create($data);
   }
 }

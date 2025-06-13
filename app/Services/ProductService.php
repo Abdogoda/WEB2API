@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Services;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +13,61 @@ class ProductService
   public function listProducts()
   {
     return Product::with(['category', 'images'])->orderBy('created_at', 'desc')->get();
+  }
+  public function getFilteredProducts(array $filters = [])
+  {
+    $query = Product::query()->where('active', true)->where('stock', '>', 0);
+
+    if (!empty($filters['search'])) {
+      $query->where('name', 'like', '%' . $filters['search'] . '%');
+    }
+
+    if (!empty($filters['category_ids']) && is_array($filters['category_ids'])) {
+      $query->whereIn('category_id', $filters['category_ids']);
+    }
+
+    if (isset($filters['min_price'])) {
+      $query->where('price', '>=', $filters['min_price']);
+    }
+    if (isset($filters['max_price'])) {
+      $query->where('price', '<=', $filters['max_price']);
+    }
+
+    if (!empty($filters['featured'])) {
+      $query->where('featured', true);
+    }
+
+    $perPage = $filters['per_page'] ?? 12;
+    return $query->paginate($perPage);
+  }
+
+  public function getFeaturedProducts(int $limit = 6)
+  {
+    return Product::with(['category', 'images'])
+      ->where('featured', true)
+      ->orderBy('created_at', 'desc')
+      ->limit($limit)
+      ->get();
+  }
+
+  public function getLatestProducts(int $limit = 6)
+  {
+    return Product::with(['category', 'images'])
+      ->where('active', true)
+      ->where('stock', '>', 0)
+      ->orderBy('created_at', 'desc')
+      ->limit($limit)
+      ->get();
+  }
+
+  public function getProductByCategory(int $category_id, int $limit = 8)
+  {
+    return Product::with(['category', 'images'])
+      ->where('category_id', $category_id)
+      ->where('active', true)
+      ->where('stock', '>', 0)
+      ->orderBy('created_at', 'desc')
+      ->paginate($limit);
   }
 
   public function createProduct(array $data, $images = null)

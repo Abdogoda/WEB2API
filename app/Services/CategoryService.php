@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Services;
 
 use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +28,15 @@ class CategoryService
   public function showCategory(Category $category)
   {
     return $category->load('products');
+  }
+
+  public function getCategoryWithActiveProducts(Category $category)
+  {
+    return $category->load([
+      'products' => function ($query) {
+        $query->where('active', true)->where('stock', '>', 0);
+      }
+    ]);
   }
 
   public function updateCategory(Category $category, array $data, $imageFile = null)

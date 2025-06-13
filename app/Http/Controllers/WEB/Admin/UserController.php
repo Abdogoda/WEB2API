@@ -5,9 +5,9 @@ namespace App\Http\Controllers\WEB\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\ChangeUserRoleRequest;
 use App\Models\User;
-use App\Services\Admin\RoleService;
+use App\Services\RoleService;
 use Illuminate\Support\Facades\Gate;
-use App\Services\Admin\UserService;
+use App\Services\UserService;
 
 class UserController extends Controller
 {

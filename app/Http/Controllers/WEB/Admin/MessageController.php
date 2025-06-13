@@ -4,7 +4,7 @@ namespace App\Http\Controllers\WEB\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Message;
-use App\Services\Admin\MessageService;
+use App\Services\MessageService;
 use Illuminate\Support\Facades\Gate;
 
 class MessageController extends Controller

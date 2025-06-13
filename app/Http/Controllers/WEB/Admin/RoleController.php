@@ -7,8 +7,8 @@ use App\Http\Requests\Role\StoreRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Services\Admin\PermissionService;
-use App\Services\Admin\RoleService;
+use App\Services\PermissionService;
+use App\Services\RoleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 

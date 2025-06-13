@@ -10,7 +10,7 @@ use App\Http\Resources\ProductImageResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\ProductImage;
-use App\Services\Admin\ProductService;
+use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
 
 class ProductController extends BaseApiController
