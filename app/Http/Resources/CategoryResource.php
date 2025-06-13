@@ -14,14 +14,13 @@ class CategoryResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
-            'image' => $this->image,
+            'image' => asset('storage/' . $this->image),
             'products_count' => $this->when(isset($this->products_count), $this->products_count),
             'products' => ProductResource::collection(
                 $this->whenLoaded('products', function () {
                     return $this->products->where('active', true)->where('stock', '>', 0);
                 })
             ),
-            'created_at' => $this->created_at,
         ];
     }
 }

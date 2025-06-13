@@ -22,7 +22,6 @@ class UserResource extends JsonResource
             'state' => $this->state,
             'zip_code' => $this->zip_code,
             'roles' => RoleResource::collection($this->whenLoaded('roles')),
-            'created_at' => $this->created_at
         ];
     }
 }
