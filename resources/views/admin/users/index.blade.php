@@ -15,7 +15,7 @@
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-3xl font-bold">User Management</h2>
             @hasPermissionTo(\App\Enums\PermissionsEnum::CREATE_ROLE->value)
-                <a href="{{ route('admin.users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add User <i class="fa fa-plus"></i></a>
+                <a href="#" class="bg-blue-500 text-white px-4 py-2 rounded">Add User <i class="fa fa-plus"></i></a>
             @endhasPermissionTo
         </div>
         

@@ -4,28 +4,33 @@ namespace App\Http\Controllers\WEB\User;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Message\StoreMessageRequest;
-use App\Models\Category;
 use App\Models\Message;
-use App\Models\Product;
-use Illuminate\Http\Request;
+use App\Services\CategoryService;
+use App\Services\MessageService;
+use App\Services\ProductService;
 
 class HomeController extends Controller
 {
 
+    public function __construct(
+        protected CategoryService $categoryService,
+        protected ProductService $productService,
+        protected MessageService $messageService
+    ) {
+    }
+
     public function index()
     {
-        $categories = Category::all();
-        $latestProducts = Product::where('active', 1)->where('stock', '>', 0)->latest()->limit(8)->get();
-        $featuredProducts = Product::where('active', 1)->where('featured', 1)->where('stock', '>', 0)->limit(8)->get();
+        $categories = $this->categoryService->getAllCategories();
+        $latestProducts = $this->productService->getlatestProducts(8);
+        $featuredProducts = $this->productService->getFeaturedProducts(8);
 
         return view('user.home', compact('categories', 'latestProducts', 'featuredProducts'));
     }
 
     public function contactUs(StoreMessageRequest $request)
     {
-        $data = $request->validated();
-
-        Message::create($data);
+        $this->messageService->createMessage($request->validated());
         return back()->with('success', 'Message sent successfully');
     }
 }

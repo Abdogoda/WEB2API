@@ -15,12 +15,18 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        protected ProductService $productService,
+        protected CategoryService $categoryService
+    ) {
+    }
     public function index()
     {
         Gate::authorize('viewAny', Product::class);
 
-        $products = Product::with(['category', 'images'])->orderBy('created_at', 'desc')->get();
-        $categories = Category::all();
+        $products = $this->productService->listProducts();
+        $categories = $this->categoryService->getAllCategories();
+
         return view('admin.products.index', compact('products', 'categories'));
     }
 
