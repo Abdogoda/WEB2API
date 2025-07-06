@@ -4,9 +4,11 @@ namespace App\Http\Controllers\WEB\Auth;
 
 use App\Enums\PermissionsEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\ChangePasswordRequest;
+use App\Http\Requests\Auth\DeleteAccountRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Models\Order;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,37 +25,19 @@ class ProfileController extends Controller
         return view('user.profile', compact('orders'));
     }
 
-    public function update(Request $request)
+    public function update(UpdateProfileRequest $request)
     {
-        $user_id = Auth::id();
-
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users,email,' . $user_id,
-            'phone' => 'nullable|string|unique:users,phone,' . $user_id,
-            'address' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'state' => 'nullable|string|max:255',
-            'zip_code' => 'nullable|string|max:255',
-        ]);
-
         if ($request->filled('email') && $request->email != Auth::user()->email) {
             $data['email_verified_at'] = null;
         }
 
-        User::find($user_id)->update($data);
+        Auth::user()->update($data);
 
         return back()->with('success', 'Profile updated successfully');
     }
 
-    public function changePassword(Request $request)
+    public function changePassword(ChangePasswordRequest $request)
     {
-        $request->validate([
-            'current_password' => 'required|string|min:8',
-            'new_password' => 'required|string|min:8|confirmed'
-        ]);
-
         $user = User::find(Auth::id());
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->with('error', 'Current password incorrect!');
@@ -63,12 +47,8 @@ class ProfileController extends Controller
         return back()->with('success', 'Your password changed successfully!');
     }
 
-    public function deleteAccount(Request $request)
+    public function deleteAccount(DeleteAccountRequest $request)
     {
-        $request->validate([
-            'password' => 'required|string'
-        ]);
-
         $user = User::find(Auth::id());
         if (!Hash::check($request->password, $user->password)) {
             return back()->with('error', 'Password incorrect!');

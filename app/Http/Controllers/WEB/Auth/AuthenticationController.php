@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\WEB\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,18 +13,9 @@ use Illuminate\Support\Facades\Hash;
 class AuthenticationController extends Controller
 {
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
-            'phone' => 'nullable|string|max:255|unique:users,phone',
-            'password' => 'required|string|max:255|confirmed',
-            'address' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'state' => 'nullable|string|max:255',
-            'zip_code' => 'nullable|string|max:255'
-        ]);
+        $data = $request->validated();
 
         $data['password'] = Hash::make($data['password']);
 
@@ -32,12 +25,9 @@ class AuthenticationController extends Controller
         return redirect()->intended('/')->with('success', 'Thank you for creating an account, Enjoy your stay');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email|max:255',
-            'password' => 'required|string|max:255'
-        ]);
+        $credentials = $request->validated();
 
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             return redirect()->intended('/')->with('success', 'You are in');

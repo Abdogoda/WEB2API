@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\WEB\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Mail\VerifyAccountMail;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -27,13 +27,8 @@ class VerifyAccountController extends Controller
         return redirect()->route('verification.verify')->with('success', 'Verification email sent successfully');
     }
 
-    public function verifyAccount(Request $request)
+    public function verifyAccount(VerifyAccountRequest $request)
     {
-
-        $request->validate([
-            'otp' => 'required|numeric|digits:6'
-        ]);
-
         $user = Auth::user();
 
         if (!$user || $user->otp != $request->otp) {
