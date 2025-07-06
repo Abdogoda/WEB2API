@@ -18,9 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
         ]);
 
-        $middleware->api([
-            ForceJsonResponse::class,
-        ]);
+        $middleware->prependToGroup('api', ForceJsonResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
