@@ -16,7 +16,7 @@
 <body class="bg-gray-900 text-white flex">
 
     <!-- Sidebar -->
-    <div id="sidebar" class="bg-gray-800 w-64 min-h-screen p-5 fixed transition-transform transform -translate-x-full md:translate-x-0">
+    <div id="sidebar" class="bg-gray-800 w-64 min-h-screen p-5 fixed top-0 transition-transform transform -translate-x-full md:translate-x-0">
         <h2 class="text-xl font-bold text-white mb-6">E-Commerce</h2>
         <ul class="space-y-4 flex-grow">
             @hasPermissionTo(\App\Enums\PermissionsEnum::VIEW_DASHBOARD->value)

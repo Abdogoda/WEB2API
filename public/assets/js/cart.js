@@ -11,7 +11,7 @@
     // Update cart badge quantity
     function updateCartBadge() {
         let cart = getCart();
-        let totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+        let totalQuantity = cart.reduce((sum, item) => sum + parseInt(item.quantity), 0);
         let cartBadge = document.getElementById("cart-badge");
 
         if (cartBadge) {

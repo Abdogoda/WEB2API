@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <section class="pt-12 px-6">
+    <section class="py-12 px-6">
         <h2 class="text-3xl font-bold text-center mb-8 relative group text-gray-800 transition-all duration-300 hover:text-blue-600 w-fit mx-auto pb-3">
             My Profile
             <span class="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-1/2 h-1 bg-blue-600 transition-all duration-300 group-hover:w-full group-hover:-translate-x-1/2"></span>
