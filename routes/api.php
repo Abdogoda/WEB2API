@@ -7,6 +7,9 @@ use App\Http\Controllers\API\V1\Admin\DashboardController;
 use App\Http\Controllers\API\V1\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\API\V1\Admin\MessageController as AdminMessageController;
 use App\Http\Controllers\API\V1\Auth\AuthenticationController;
+use App\Http\Controllers\API\V1\Auth\ForgotPasswordController;
+use App\Http\Controllers\API\V1\Auth\ProfileController;
+use App\Http\Controllers\API\V1\Auth\VerifyAccountController;
 use App\Http\Controllers\API\V1\User\CategoryController;
 use App\Http\Controllers\API\V1\User\MessageController;
 use App\Http\Controllers\API\V1\User\ProductController;
@@ -26,13 +29,25 @@ Route::post('/contact-us', [MessageController::class, 'store']);
 Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthenticationController::class, 'login']);
     Route::post('/register', [AuthenticationController::class, 'register']);
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'forgot']);
+    Route::post('/reset-password', [ForgotPasswordController::class, 'reset']);
 });
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'index']);
+    Route::put('/profile', [ProfileController::class, 'update']);
+    Route::post('/change-password', [ProfileController::class, 'changePassword']);
+    Route::post('/delete-account', [ProfileController::class, 'deleteAccount']);
 
-    Route::post('/logout', [AuthenticationController::class, 'logout'])->name('logout');
-    Route::post('/logout-other-devices', [AuthenticationController::class, 'logoutOtherDevices'])->name('logout-other-devices');
+    Route::post('/logout', [AuthenticationController::class, 'logout']);
+    Route::post('/logout-other-devices', [AuthenticationController::class, 'logoutOtherDevices']);
+
+    // Email verification
+    Route::post("/send-verification", [VerifyAccountController::class, 'sendVerificationEmail']);
+    Route::view("/verify-account", 'auth.verify-account');
+    Route::post("/verify-account", [VerifyAccountController::class, 'verifyAccount']);
 
 
     Route::prefix('admin')->group(function () {
