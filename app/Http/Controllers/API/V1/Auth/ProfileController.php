@@ -1,60 +1,57 @@
 <?php
 
-namespace App\Http\Controllers\WEB\Auth;
+namespace App\Http\Controllers\API\V1\Auth;
 
-use App\Enums\PermissionsEnum;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseApiController;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\DeleteAccountRequest;
 use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Models\Order;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class ProfileController extends Controller
+class ProfileController extends BaseApiController
 {
-
     public function index()
     {
-        if (Auth::user()->hasPermissionTo(PermissionsEnum::VIEW_DASHBOARD->value)) {
-            return view('admin.profile');
-        }
-
-        $orders = Order::where('user_id', auth()->id())->orderByDesc('created_at')->get();
-        return view('user.profile', compact('orders'));
+        $user = Auth::user();
+        $orders = Order::where('user_id', $user->id)->orderByDesc('created_at')->get();
+        return $this->sendResponse([
+            'user' => $user,
+            'orders' => $orders
+        ], 'Profile data fetched successfully.');
     }
 
     public function update(UpdateProfileRequest $request)
     {
-        if ($request->filled('email') && $request->email != Auth::user()->email) {
+        $data = $request->validated();
+        $user = Auth::user();
+        if (isset($data['email']) && $data['email'] != $user->email) {
             $data['email_verified_at'] = null;
         }
-
-        Auth::user()->update($data);
-
-        return back()->with('success', 'Profile updated successfully');
+        $user->update($data);
+        return $this->sendResponse($user, 'Profile updated successfully.');
     }
 
     public function changePassword(ChangePasswordRequest $request)
     {
-        $user = User::find(Auth::id());
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->with('error', 'Current password incorrect!');
+        $data = $request->validated();
+        $user = Auth::user();
+        if (!$user || !Hash::check($data['current_password'], (string) $user->password)) {
+            return $this->sendError('Current password incorrect!', [], 422);
         }
-
-        $user->update(['password' => Hash::make($request->new_password)]);
-        return back()->with('success', 'Your password changed successfully!');
+        $user->update(['password' => Hash::make($data['new_password'])]);
+        return $this->sendResponse(null, 'Your password changed successfully!');
     }
 
     public function deleteAccount(DeleteAccountRequest $request)
     {
-        $user = User::find(Auth::id());
-        if (!Hash::check($request->password, $user->password)) {
-            return back()->with('error', 'Password incorrect!');
+        $data = $request->validated();
+        $user = Auth::user();
+        if (!$user || !Hash::check($data['password'], (string) $user->password)) {
+            return $this->sendError('Password incorrect!', [], 422);
         }
-
         $user->delete();
-        return redirect()->route('home')->with('success', 'Your account has been deleted successfully!');
+        return $this->sendResponse(null, 'Your account has been deleted successfully!');
     }
 }

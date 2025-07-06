@@ -1,22 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\WEB\Auth;
+namespace App\Http\Controllers\API\V1\Auth;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseApiController;
 use App\Http\Requests\Auth\VerifyAccountRequest;
 use App\Mail\VerifyAccountMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
-class VerifyAccountController extends Controller
+class VerifyAccountController extends BaseApiController
 {
-
     public function sendVerificationEmail()
     {
         $user = Auth::user();
 
         if ($user->email_verified_at) {
-            return back()->with('warning', 'Email already verified');
+            return $this->sendError('Email already verified', [], 409);
         }
 
         $user->otp = rand(100000, 999999);
@@ -24,20 +23,21 @@ class VerifyAccountController extends Controller
 
         Mail::to($user)->send(new VerifyAccountMail($user->otp));
 
-        return redirect()->route('verification.verify')->with('success', 'Verification email sent successfully');
+        return $this->sendResponse(null, 'Verification email sent successfully');
     }
 
     public function verifyAccount(VerifyAccountRequest $request)
     {
         $user = Auth::user();
+        $data = $request->validated();
 
-        if (!$user || $user->otp != $request->otp) {
-            return back()->with('error', 'Invalid OTP');
+        if (!$user || $user->otp != $data['otp']) {
+            return $this->sendError('Invalid OTP', [], 422);
         }
 
         $user->email_verified_at = now();
         $user->save();
 
-        return redirect()->route("profile")->with('success', 'Your Email has been verified successfully');
+        return $this->sendResponse(null, 'Your Email has been verified successfully');
     }
 }
