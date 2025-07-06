@@ -60,7 +60,7 @@
                 @csrf
 
                 <label class="block text-gray-400 mb-1">Product Name</label>
-                <input type="text" name="name" value="{{ old('name') }}" placeholder="Enter product name" class="w-full p-3 rounded bg-gray-700 text-gray-100 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
+                <input type="text" name="name" value="{{ old('name') }}" required placeholder="Enter product name" class="w-full p-3 rounded bg-gray-700 text-gray-100 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4">
                 <div class="flex space-x-2 mb-4">
                     <div class="w-1/2">
                         <label class="block text-gray-400 mb-1">Product Price</label>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="w-1/2">
                         <label class="block text-gray-400 mb-1">Product Images</label>
-                        <input type="file" name="images[]" multiple class="w-full p-2 rounded bg-gray-700 text-gray-100 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="file" name="images[]" multiple required class="w-full p-2 rounded bg-gray-700 text-gray-100 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
 
