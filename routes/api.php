@@ -46,7 +46,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Email verification
     Route::post("/send-verification", [VerifyAccountController::class, 'sendVerificationEmail']);
-    Route::view("/verify-account", 'auth.verify-account');
     Route::post("/verify-account", [VerifyAccountController::class, 'verifyAccount']);
 
 
