@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\API\BaseApiController;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Mail\SendResetLinkMail;
