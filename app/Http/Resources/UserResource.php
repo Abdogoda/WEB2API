@@ -22,8 +22,6 @@ class UserResource extends JsonResource
             'state' => $this->state,
             'zip_code' => $this->zip_code,
             'roles' => RoleResource::collection($this->whenLoaded('roles')),
-            'permissions' => $this->when(count($this->permissions()) > 0, $this->permissions()),
-            'orders' => $this->whenLoaded('orders'),
         ];
     }
 }

@@ -15,7 +15,7 @@ class ProfileController extends BaseApiController
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::user()->load('roles');
         $orders = Order::where('user_id', $user->id)->orderByDesc('created_at')->get();
         return $this->sendResponse([
             'user' => UserResource::make($user),
