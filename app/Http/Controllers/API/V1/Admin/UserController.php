@@ -25,7 +25,6 @@ class UserController extends BaseApiController
 
     public function show(User $user): JsonResponse
     {
-        Gate::authorize('view', $user);
         $user = $this->userService->getUser($user);
         return $this->sendResponse(new UserResource($user), 'User retrieved successfully.');
     }
