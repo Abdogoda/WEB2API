@@ -13,6 +13,7 @@ use App\Models\Role;
 use App\Services\RoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class RoleController extends BaseApiController
 {
@@ -23,24 +24,28 @@ class RoleController extends BaseApiController
 
     public function index(): JsonResponse
     {
+        Gate::authorize('viewAny', Role::class);
         $roles = $this->roleService->getAllRoles();
         return $this->sendResponse(RoleResource::collection($roles), 'Roles retrieved successfully.');
     }
 
     public function store(StoreRoleRequest $request): JsonResponse
     {
+        Gate::authorize('create', Role::class);
         $role = $this->roleService->createRole($request->validated());
         return $this->sendResponse(new RoleResource($role), 'Role created successfully', 201);
     }
 
     public function show(Role $role): JsonResponse
     {
+        Gate::authorize('view', $role);
         $role->load('permissions');
         return $this->sendResponse(new RoleResource($role), 'Role retrieved successfully.');
     }
 
     public function update(UpdateRoleRequest $request, Role $role): JsonResponse
     {
+        Gate::authorize('update', $role);
         if ($role->name == 'Owner') {
             return response()->json([
                 'error' => 'You cannot update this role'
@@ -53,6 +58,7 @@ class RoleController extends BaseApiController
 
     public function destroy(Role $role): JsonResponse
     {
+        Gate::authorize('delete', $role);
         if ($role->name == 'Owner') {
             return response()->json([
                 'error' => 'You cannot delete this role'

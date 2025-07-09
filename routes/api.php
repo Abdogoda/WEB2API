@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PermissionsEnum;
 use App\Http\Controllers\API\V1\Admin\RoleController;
 use App\Http\Controllers\API\V1\Admin\UserController;
 use App\Http\Controllers\API\V1\Admin\CategoryController as AdminCategoryController;
@@ -49,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post("/verify-account", [VerifyAccountController::class, 'verifyAccount']);
 
 
-    Route::prefix('admin')->group(function () {
+    Route::middleware('permission:' . PermissionsEnum::VIEW_DASHBOARD->value)->prefix('admin')->group(function () {
 
         // Dashboard
         Route::get('dashboard', [DashboardController::class, 'index']);

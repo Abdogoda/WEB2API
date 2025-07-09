@@ -6,6 +6,7 @@ use App\Http\Controllers\API\BaseApiController;
 use App\Http\Requests\Auth\ChangePasswordRequest;
 use App\Http\Requests\Auth\DeleteAccountRequest;
 use App\Http\Requests\Auth\UpdateProfileRequest;
+use App\Http\Resources\UserResource;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,10 +15,10 @@ class ProfileController extends BaseApiController
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::user()->load('roles');
         $orders = Order::where('user_id', $user->id)->orderByDesc('created_at')->get();
         return $this->sendResponse([
-            'user' => $user,
+            'user' => UserResource::make($user),
             'orders' => $orders
         ], 'Profile data fetched successfully.');
     }

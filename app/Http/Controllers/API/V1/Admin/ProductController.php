@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Services\ProductService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends BaseApiController
 {
@@ -21,12 +22,14 @@ class ProductController extends BaseApiController
 
     public function index(): JsonResponse
     {
+        Gate::authorize('viewAny', Product::class);
         $products = $this->productService->listProducts();
         return $this->sendResponse(ProductResource::collection($products), 'Products retrieved successfully.');
     }
 
     public function store(StoreProductRequest $request): JsonResponse
     {
+        Gate::authorize('create', Product::class);
         $data = $request->validated();
         $images = $request->file('images', []);
         $product = $this->productService->createProduct($data, $images);
@@ -35,18 +38,21 @@ class ProductController extends BaseApiController
 
     public function show(Product $product): JsonResponse
     {
+        Gate::authorize('view', $product);
         $product = $this->productService->getProduct($product);
         return $this->sendResponse(new ProductResource($product), 'Product retrieved successfully.');
     }
 
     public function simillerProducts(Product $product): JsonResponse
     {
+        Gate::authorize('view', $product);
         $simillarProducts = $this->productService->simillarProducts($product);
         return $this->sendResponse(ProductResource::collection($simillarProducts), 'Simillar products fetched successfully.');
     }
 
     public function update(UpdateProductRequest $request, Product $product): JsonResponse
     {
+        Gate::authorize('update', $product);
         $data = $request->validated();
         $images = $request->file('images', []);
         $product = $this->productService->updateProduct($product, $data, $images);
@@ -55,6 +61,7 @@ class ProductController extends BaseApiController
 
     public function destroy(Product $product): JsonResponse
     {
+        Gate::authorize('delete', $product);
         $this->productService->deleteProduct($product);
         return $this->sendResponse(message: 'Product deleted successfully.');
     }
