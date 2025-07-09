@@ -8,6 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends BaseApiController
 {
@@ -17,18 +18,21 @@ class UserController extends BaseApiController
 
     public function index(): JsonResponse
     {
+        Gate::authorize('viewAny', User::class);
         $users = $this->userService->getAllUsers();
         return $this->sendResponse(UserResource::collection($users), 'Users retrieved successfully.');
     }
 
     public function show(User $user): JsonResponse
     {
+        Gate::authorize('view', $user);
         $user = $this->userService->getUser($user);
         return $this->sendResponse(new UserResource($user), 'User retrieved successfully.');
     }
 
     public function changeRole(ChangeUserRoleRequest $request, User $user): JsonResponse
     {
+        Gate::authorize('changeRoles', $user);
         $user = $this->userService->changeUserRoles($user, $request->role_ids);
         return $this->sendResponse($user, 'User roles updated successfully');
     }
