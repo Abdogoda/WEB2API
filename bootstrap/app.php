@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\API\BaseApiController;
 use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,5 +24,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToGroup('api', ForceJsonResponse::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (HttpException $exception, Request $request) {
+            if ($request->is('api/*') || $request->acceptsJson()) {
+                return (new BaseApiController)->sendError(
+                    error: $exception->getMessage(),
+                    code: $exception->getStatusCode(),
+                );
+            }
+        });
     })->create();
