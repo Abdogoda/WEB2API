@@ -64,7 +64,7 @@ class RoleController extends BaseApiController
                 'error' => 'You cannot delete this role'
             ], 403);
         }
-        $this->roleService->deleteRole($role);
+        $role->delete();
         return $this->sendResponse(message: 'Role deleted successfully');
     }
 
