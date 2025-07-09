@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\API\Admin;
+namespace Tests\Feature\API\V1\Admin\User;
 
 use Tests\TestCase;
 
