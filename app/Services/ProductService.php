@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Storage;
@@ -38,7 +37,7 @@ class ProductService
     }
 
     $perPage = $filters['per_page'] ?? 12;
-    return $query->paginate($perPage);
+    return $query->with('images', 'category')->paginate($perPage);
   }
 
   public function getFeaturedProducts(int $limit = 6)
@@ -109,11 +108,12 @@ class ProductService
     $product->delete();
   }
 
-  public function simillarProducts(Product $product, int $limit = 6)
+  public function similarProducts(Product $product, int $limit = 6)
   {
     return Product::where('category_id', $product->category_id)
       ->where('id', '!=', $product->id)
-      ->inRandomOrder()->limit($limit)->get();
+      ->inRandomOrder()->limit($limit)
+      ->with('category', 'images')->get();
   }
 
   public function uploadImages(Product $product, array $images)

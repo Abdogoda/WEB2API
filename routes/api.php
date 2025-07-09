@@ -17,10 +17,10 @@ use App\Http\Controllers\API\V1\User\ProductController;
 use Illuminate\Support\Facades\Route;
 
 // Public routes
+Route::get('/products/latest', [ProductController::class, 'latestProducts']);
+Route::get('/products/featured', [ProductController::class, 'featuredProducts']);
+Route::get('/products/{product}/similar', [ProductController::class, 'similarProducts']);
 Route::apiResource('/products', ProductController::class)->only(['index', 'show']);
-Route::get('products/latest', [ProductController::class, 'latestProducts']);
-Route::get('products/featured', [ProductController::class, 'featuredProducts']);
-Route::get('/products/{product}/similler', [ProductController::class, 'simillerProducts']);
 
 Route::apiResource('/categories', CategoryController::class)->only(['index', 'show']);
 

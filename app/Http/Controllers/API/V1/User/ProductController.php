@@ -6,7 +6,6 @@ use App\Http\Controllers\API\BaseApiController;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Requests\Product\ListProductRequest;
 use App\Services\ProductService;
 
@@ -30,9 +29,9 @@ class ProductController extends BaseApiController
         return $this->sendResponse(new ProductResource($product), 'Product retrieved successfully.');
     }
 
-    public function simillarProducts(Product $product)
+    public function similarProducts(Product $product)
     {
-        $similarProducts = $this->productService->simillarProducts($product);
+        $similarProducts = $this->productService->similarProducts($product);
 
         return $this->sendResponse(ProductResource::collection($similarProducts), 'Similar products fetched successfully.');
     }
