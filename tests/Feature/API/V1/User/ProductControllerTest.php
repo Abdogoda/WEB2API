@@ -10,8 +10,6 @@ use Tests\TestCase;
 
 class ProductControllerTest extends TestCase
 {
-  use RefreshDatabase;
-
   protected $url, $products, $category;
 
   public function setUp(): void
