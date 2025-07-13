@@ -56,7 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index']);
 
         // User management
-        Route::apiResource('users', UserController::class);
+        Route::get('users', [UserController::class, 'index']);
+        Route::get('users/{user}', [UserController::class, 'show']);
         Route::post('users/{user}/change-role', [UserController::class, 'changeRole']);
 
         // Roles management
