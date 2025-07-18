@@ -56,7 +56,10 @@ cd WEB2API
 
 To view the project at a specific stage:
 
+```bash
 git checkout branch-name
+```
+
 # Example:
 ```bash
 git checkout install-api
