@@ -54,13 +54,7 @@ cd WEB2API
 
 2. Checkout a specific branch
 
-To view the project at a specific stage:
-
-```bash
-git checkout branch-name
-```
-
-# Example:
+To view the project at a specific stage, For example:
 ```bash
 git checkout install-api
 ```
@@ -78,19 +72,19 @@ cp .env.example to .env
 ```
 
 5. Generate App Key
-   ```bash
-   php artisan key:generate
-   ```
+```bash
+php artisan key:generate
+```
 
 6. Set up the database (SQLITE):  
-   ```bash
-   php artisan migrate
-   ```
+```bash
+php artisan migrate
+```
 
 7. Start the development server:  
-   ```bash
-   php artisan serve
-   ```
+```bash
+php artisan serve
+```
 
 8. Access the app in your browser at `http://localhost:8000`.
 
