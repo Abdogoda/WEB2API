@@ -46,7 +46,7 @@ You can switch to any branch to see the project **exactly as it was at that stag
 
 ## 🚀 **How to Use This Repository**
 
-### 1. **Clone the repository**
+1. **Clone the repository**
 ```bash
 git clone https://github.com/Abdogoda/WEB2API.git
 cd WEB2API
