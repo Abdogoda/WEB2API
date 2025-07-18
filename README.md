@@ -98,7 +98,7 @@ This project demonstrates step-by-step conversion of a Laravel Web project into 
 1. API Setup – Install and configure API routes, versioning, and test endpoints.
 2. CRUD to API – Convert Web CRUD operations into JSON-based API endpoints.
 3. Standardized Responses – Create a BaseApiController to unify API responses.
-4. 4. API Resources – Transform models into clean JSON output using Laravel Resource classes.
+4. API Resources – Transform models into clean JSON output using Laravel Resource classes.
 5. Form Requests – Move validation logic out of controllers.
 6. Service Pattern – Refactor and share logic between Web and API layers.
 7. Authentication – Implement token-based authentication with Laravel Sanctum.
@@ -115,29 +115,9 @@ This project demonstrates step-by-step conversion of a Laravel Web project into 
 
 By the final branch, you’ll have:
 
-A Postman Collection with all endpoints.
+Fully converted project from web to web and api.
+A [Postman Collection(https://documenter.getpostman.com/view/25835711/2sB34hFfbQ)] with all endpoints.
 Examples of requests and responses.
-
-
-
----
-
-🎥 Episode Index
-
-Each episode in the YouTube series corresponds to a branch in this repo:
-1. Introduction
-2. Install API
-3. Convert First CRUD
-4. Standardized Responses
-5. API Resources
-6. Form Requests
-7. Service Pattern
-8. Authentication
-9. Postman Pre-request Script
-10. Authorization
-11. API Tests
-12. Documentation
-
 
 
 
