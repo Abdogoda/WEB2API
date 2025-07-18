@@ -116,7 +116,8 @@ This project demonstrates step-by-step conversion of a Laravel Web project into 
 By the final branch, you’ll have:
 
 Fully converted project from web to web and api.
-A [Postman Collection(https://documenter.getpostman.com/view/25835711/2sB34hFfbQ)] with all endpoints.
+A [Postman Collection](https://documenter.getpostman.com/view/25835711/2sB34hFfbQ) with all endpoints.
+
 Examples of requests and responses.
 
 
