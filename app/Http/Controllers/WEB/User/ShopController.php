@@ -37,7 +37,7 @@ class ShopController extends Controller
 
     public function product(Product $product)
     {
-        $simillarProducts = $this->productService->simillarProducts($product);
+        $simillarProducts = $this->productService->similarProducts($product);
 
         return view('user.product', compact('product', 'simillarProducts'));
     }
